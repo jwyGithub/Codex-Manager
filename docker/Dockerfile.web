@@ -1,4 +1,4 @@
-FROM node:20-bookworm-slim AS ui
+FROM node:lts-bookworm-slim AS ui
 
 WORKDIR /src/apps
 
