@@ -18,7 +18,7 @@ on:
 
 env:
     REGISTRY: ghcr.io
-    IMAGE_NAME: codex-manager-web
+    IMAGE_NAME: ${{ github.repository }}-web
 
 jobs:
     build-and-push:
