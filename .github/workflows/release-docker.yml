@@ -18,7 +18,7 @@ on:
 
 env:
     REGISTRY: ghcr.io
-    IMAGE_NAME: ${{ github.repository }}-core
+    IMAGE_NAME: ${{ github.repository }}
 
 jobs:
     build-and-push:
@@ -84,7 +84,7 @@ jobs:
               uses: docker/build-push-action@v6
               with:
                   context: .
-                  file: docker/Dockerfile.service
+                  file: docker/Dockerfile
                   platforms: linux/amd64
                   push: ${{ github.event_name != 'pull_request' }}
                   tags: ${{ steps.meta.outputs.tags }}
