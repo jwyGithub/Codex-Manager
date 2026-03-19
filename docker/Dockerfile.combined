@@ -1,0 +1,70 @@
+# Stage 1: Build frontend UI
+FROM node:lts-bookworm-slim AS ui
+
+WORKDIR /src/apps
+
+RUN corepack enable && corepack prepare pnpm@10.30.3 --activate
+
+COPY apps/package.json apps/pnpm-lock.yaml apps/pnpm-workspace.yaml ./
+COPY apps/components.json apps/next.config.ts ./
+COPY apps/postcss.config.mjs apps/tsconfig.json ./
+COPY apps/public ./public
+COPY apps/src ./src
+
+RUN pnpm install --frozen-lockfile && pnpm run build
+
+# Stage 2: Build both Rust binaries
+FROM rust:1-bookworm AS builder
+
+WORKDIR /src
+
+COPY Cargo.toml Cargo.lock ./
+COPY crates ./crates
+
+COPY --from=ui /src/apps/out ./apps/out
+
+# Build service first so its compiled deps are cached for the web build
+RUN cargo build --locked -p codexmanager-service --release \
+    && cargo build --locked -p codexmanager-web --release --features embedded-ui
+
+# Stage 3: Runtime image
+FROM debian:bookworm-slim
+
+ARG APP_USER=codexmanager
+ARG APP_UID=10001
+
+WORKDIR /app
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates wget \
+    && rm -rf /var/lib/apt/lists/* \
+    && groupadd --system --gid ${APP_UID} ${APP_USER} \
+    && useradd --system --uid ${APP_UID} --gid ${APP_UID} --home-dir /app --create-home --shell /usr/sbin/nologin ${APP_USER} \
+    && mkdir -p /data \
+    && chown -R ${APP_UID}:${APP_UID} /app /data
+
+COPY --from=builder /src/target/release/codexmanager-service /usr/local/bin/codexmanager-service
+COPY --from=builder /src/target/release/codexmanager-web /usr/local/bin/codexmanager-web
+
+COPY --chown=${APP_USER}:${APP_USER} docker/entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
+
+# Service listen address (also used by web as the upstream connect address)
+# Both binaries share this var; 127.0.0.1 is correct for intra-container communication.
+ENV CODEXMANAGER_SERVICE_ADDR=0.0.0.0:48760
+ENV CODEXMANAGER_WEB_ADDR=0.0.0.0:48761
+ENV CODEXMANAGER_WEB_NO_SPAWN_SERVICE=1
+ENV CODEXMANAGER_WEB_NO_OPEN=1
+ENV CODEXMANAGER_DB_PATH=/data/codexmanager.db
+ENV CODEXMANAGER_RPC_TOKEN_FILE=/data/codexmanager.rpc-token
+
+VOLUME ["/data"]
+EXPOSE 48760 48761
+
+# web health implies service is also healthy (web proxies through service)
+HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://127.0.0.1:48761/__auth_status || exit 1
+
+USER ${APP_USER}
+
+CMD ["/app/entrypoint.sh"]
