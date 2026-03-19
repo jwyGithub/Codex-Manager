@@ -9,10 +9,8 @@ echo "[entrypoint] Starting codexmanager-web..."
 codexmanager-web &
 WEB_PID=$!
 
-# Forward SIGTERM / SIGINT to both children
 trap 'echo "[entrypoint] Shutting down..."; kill "$SERVICE_PID" "$WEB_PID" 2>/dev/null; wait; exit 0' TERM INT
 
-# Poll every 5 s; exit the container if either process dies
 while true; do
     if ! kill -0 "$SERVICE_PID" 2>/dev/null; then
         echo "[entrypoint] codexmanager-service exited unexpectedly"
