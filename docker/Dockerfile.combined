@@ -6,12 +6,17 @@ WORKDIR /src/apps
 RUN corepack enable && corepack prepare pnpm@10.30.3 --activate
 
 COPY apps/package.json apps/pnpm-lock.yaml apps/pnpm-workspace.yaml ./
+
+RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
+    pnpm install --frozen-lockfile
+
 COPY apps/components.json apps/next.config.ts ./
 COPY apps/postcss.config.mjs apps/tsconfig.json ./
 COPY apps/public ./public
 COPY apps/src ./src
 
-RUN pnpm install --frozen-lockfile && pnpm run build
+RUN --mount=type=cache,target=/src/apps/.next/cache \
+    pnpm run build
 
 # Stage 2: Build both Rust binaries
 FROM rust:1-bookworm AS builder
@@ -23,9 +28,13 @@ COPY crates ./crates
 
 COPY --from=ui /src/apps/out ./apps/out
 
-# Build service first so its compiled deps are cached for the web build
-RUN cargo build --locked -p codexmanager-service --release \
-    && cargo build --locked -p codexmanager-web --release --features embedded-ui
+RUN --mount=type=cache,target=/usr/local/cargo/registry \
+    --mount=type=cache,target=/usr/local/cargo/git \
+    --mount=type=cache,target=/src/target \
+    cargo build --locked -p codexmanager-service --release \
+    && cargo build --locked -p codexmanager-web --release --features embedded-ui \
+    && cp target/release/codexmanager-service /usr/local/bin/codexmanager-service \
+    && cp target/release/codexmanager-web /usr/local/bin/codexmanager-web
 
 # Stage 3: Runtime image
 FROM debian:bookworm-slim
@@ -43,8 +52,8 @@ RUN apt-get update \
     && mkdir -p /data \
     && chown -R ${APP_UID}:${APP_UID} /app /data
 
-COPY --from=builder /src/target/release/codexmanager-service /usr/local/bin/codexmanager-service
-COPY --from=builder /src/target/release/codexmanager-web /usr/local/bin/codexmanager-web
+COPY --from=builder /usr/local/bin/codexmanager-service /usr/local/bin/codexmanager-service
+COPY --from=builder /usr/local/bin/codexmanager-web /usr/local/bin/codexmanager-web
 
 COPY --chown=${APP_USER}:${APP_USER} docker/entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
