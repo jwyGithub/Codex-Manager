@@ -29,6 +29,7 @@ export interface Account {
   groupName: string;
   sort: number;
   status: string;
+  statusReason: string;
   isAvailable: boolean;
   isLowQuota: boolean;
   lastRefreshAt: number | null;
@@ -63,6 +64,7 @@ export interface ApiKey {
   model: string;
   modelSlug: string;
   reasoningEffort: string;
+  serviceTier: string;
   protocol: string;
   clientType: string;
   authScheme: string;
@@ -226,9 +228,9 @@ export interface AppSettings {
   freeAccountMaxModelOptions: string[];
   requestCompressionEnabled: boolean;
   gatewayOriginator: string;
+  gatewayUserAgentVersion: string;
   gatewayResidencyRequirement: string;
   gatewayResidencyRequirementOptions: string[];
-  cpaNoCookieHeaderModeEnabled: boolean;
   upstreamProxyUrl: string;
   upstreamStreamTimeoutMs: number;
   sseKeepaliveIntervalMs: number;
