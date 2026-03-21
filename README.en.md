@@ -7,8 +7,10 @@
 <p align="center">A local desktop + service toolkit for Codex-compatible account and gateway management.</p>
 
 <p align="center">
-  <a href="README.md">中文</a>
+  <a href="README.en.md">中文</a>|
+  <a href="#sponsor">Sponsor</a>
 </p>
+
 
 A local desktop + service toolkit for managing Codex-compatible accounts, usage, platform keys, and a built-in local gateway.
 
@@ -37,14 +39,14 @@ A local desktop + service toolkit for managing Codex-compatible accounts, usage,
 | Build locally, package, publish, run scripts | [Build, release, and script guide](docs/release/20260310122606851_构建发布与脚本说明.md) |
 
 ## Recent Changes
-- Current latest version: `v0.1.11` (2026-03-20)
-- `v0.1.11` continues the Codex-first cleanup on the main gateway path: conversation binding, automatic account-switch thread rollover, outbound `originator` / `User-Agent` / request-compression alignment, and the removal of the upstream cookie path all land in the same release.
+- Current latest version: `v0.1.12` (2026-03-20)
+- `v0.1.12` continues the desktop and docs cleanup from this round: platform-key name updates now round-trip correctly on both Web and desktop, key IDs are fully visible by default, and the README adds a sponsor jump entry.
 - Account management adds the most practical governance features from this round: `account_deactivated` and `workspace_deactivated` are now recognized as unavailable signals, the list supports a dedicated `Banned` filter, and the actions menu can clean banned accounts in one click.
 - The 5-hour and 7-day quota columns now show reset timestamps under each progress bar. Free accounts that only expose a 7-day window also render the reset time under the 7-day column instead of the wrong bucket.
 - Platform keys now support service tier overrides with `Follow Request`, `Fast`, and `Flex`. `Fast` maps to upstream `priority`, while `Flex` is forwarded as `flex`; the desktop create/edit flow now saves and round-trips these values correctly.
 - The Settings page restores the service listen-mode switch so you can choose between `localhost` and `0.0.0.0`; the `Check for Updates` button now shows loading only for manual checks.
 - Web and desktop interaction bugs were also cleaned up: refreshing non-home Web routes no longer downloads the wrong file, and clipboard actions now degrade gracefully when `navigator.clipboard.writeText` is unavailable.
-- The release path stays unified: the product version is now `0.1.11`, and the workspace, frontend package, Tauri desktop app, release-version checks, and README version notes are all kept in sync. See [CHANGELOG.md](CHANGELOG.md) for the full history.
+- The release path stays unified: the product version is now `0.1.12`, and the workspace, frontend package, Tauri desktop app, release-version checks, and README version notes are all kept in sync. See [CHANGELOG.md](CHANGELOG.md) for the full history.
 
 ### Recent Commit Highlights
 - `cb990a1`: refine account cleanup entry points and tighten the docs surface. The accounts menu now exposes banned cleanup and count display, while README/docs navigation is trimmed to the current mainline path.
@@ -139,6 +141,15 @@ A local desktop + service toolkit for managing Codex-compatible accounts, usage,
       hight="100"
     />
   </a>
+</p>
+
+## Sponsor
+
+If this project helps you, you are welcome to support its ongoing maintenance and updates.
+
+<p align="left">
+  <img src="assets/images/wechatPay.jpg" alt="WeChat sponsor QR code" width="180" />
+  <img src="assets/images/AliPay.jpg" alt="Alipay sponsor QR code" width="180" />
 </p>
 
 ## Contact Information

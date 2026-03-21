@@ -7,8 +7,11 @@
 <p align="center">本地桌面端 + 服务进程的 Codex 账号管理器+网关转发</p>
 
 <p align="center">
-  <a href="README.en.md">English</a>
+  <a href="README.en.md">English</a>|
+  <a href="#赞助支持">赞助支持</a>
 </p>
+
+
 
 本地桌面端 + 服务进程的 Codex 账号池管理器，用于统一管理账号、用量与平台 Key，并提供本地网关能力。
 
@@ -37,14 +40,14 @@
 | 本地构建、打包、发版、脚本调用 | [构建发布与脚本说明](docs/release/20260310122606851_构建发布与脚本说明.md) |
 
 ## 最近变更
-- 当前最新版本：`v0.1.11`（2026-03-20）
-- `v0.1.11` 重点收口了 Codex-first 主链路：会话绑定、自动切号即切线程、`originator` / `User-Agent` / 请求压缩等出站语义继续向 Codex 对齐，同时移除了 upstream cookie 链路和旧兼容路径的遗留影响。
+- 当前最新版本：`v0.1.12`（2026-03-20）
+- `v0.1.12` 继续补齐这一轮桌面与文档收口：平台密钥名称更新链路现已在 Web / 桌面端统一打通，密钥 ID 默认完整显示，README 也补上了赞助支持入口与跳转。
 - 账号管理补齐了这一轮最常用的治理能力：`account_deactivated` 与 `workspace_deactivated` 会被自动识别为不可用信号，页面支持直接筛选“封禁”，并提供“一键清理封禁账号”入口。
 - 账号页的 5 小时 / 7 天额度现在都会在进度条下方显示重置时间；仅提供 7 天窗口的 free 账号也会把重置时间正确显示到 7 天列，避免看错窗口。
 - 平台密钥新增服务等级配置：`跟随请求`、`Fast`、`Flex`。其中 `Fast` 会映射为上游 `priority`，`Flex` 会直传为 `flex`；桌面端创建 / 编辑链路也已修正，现在能正常保存与回显。
 - 设置页补回了服务监听切换，支持在 `localhost` 与 `0.0.0.0` 之间切换；“检查更新”按钮现在只会在手动点击时显示加载状态，不会再被静默自动检查误触发。
 - Web / 桌面交互层也做了补丁修复：Web 非首页刷新不再误下载文件，复制 API Key / 登录链接在缺少 `navigator.clipboard.writeText` 的环境下也会自动降级复制。
-- 发布链路继续统一收口：版本已提升到 `0.1.11`，workspace、前端包、Tauri 桌面端、版本一致性校验脚本和 README 版本说明已同步对齐。完整历史请看 [CHANGELOG.md](CHANGELOG.md)。
+- 发布链路继续统一收口：版本已提升到 `0.1.12`，workspace、前端包、Tauri 桌面端、版本一致性校验脚本和 README 版本说明已同步对齐。完整历史请看 [CHANGELOG.md](CHANGELOG.md)。
 
 ### 近期提交摘要
 - `cb990a1`：完善账号清理入口与文档收口。账号操作菜单补齐封禁清理入口与数量展示，README / 文档入口同步收紧到当前主线路径。
@@ -77,6 +80,13 @@
 2. 进入“账号管理”，添加账号并完成授权。
 3. 如回调失败，粘贴回调链接手动完成解析。
 4. 刷新用量并确认账号状态。
+
+## 默认数据目录
+- 桌面端默认会把 SQLite 数据库写到应用数据目录下，文件名固定为 `codexmanager.db`。
+- Windows：`%APPDATA%\\com.codexmanager.desktop\\codexmanager.db`
+- macOS：`~/Library/Application Support/com.codexmanager.desktop/codexmanager.db`
+- Linux：`~/.local/share/com.codexmanager.desktop/codexmanager.db`
+- 如需调整数据库、代理、监听地址等运行配置，可继续查看 [环境变量与运行配置](docs/report/20260309195355187_环境变量与运行配置说明.md)。
 
 ## 页面展示
 ### 桌面端
@@ -141,6 +151,15 @@
       hight="100"
     />
   </a>
+</p>
+
+## 赞助支持
+
+如果这个项目对你有帮助，欢迎请作者喝杯咖啡，支持后续维护与更新。
+
+<p align="left">
+  <img src="assets/images/wechatPay.jpg" alt="微信赞助码" width="180" />
+  <img src="assets/images/AliPay.jpg" alt="支付宝赞助码" width="180" />
 </p>
 
 ## 联系方式
